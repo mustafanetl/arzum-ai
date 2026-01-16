@@ -157,6 +157,60 @@ The workflow is in `.github/workflows/deploy.yml` and runs on every push to `mai
 
 ---
 
+## Auto-deploy from GitHub to Google Cloud (A→Z)
+
+Follow these exact steps to set up SSH-based deployments from GitHub Actions.
+
+### 1) On your laptop: create a deploy key
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/arzum_actions
+```
+
+### 2) On the VM (as `deploy`): create SSH directory and authorized_keys
+```bash
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+touch ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+```
+Then paste the public key from your laptop into `~/.ssh/authorized_keys`:
+```bash
+nano ~/.ssh/authorized_keys
+```
+
+### 3) Add GitHub secrets
+In GitHub → **Settings → Secrets and variables → Actions**, add:
+- `SERVER_HOST=35.246.230.74`
+- `SERVER_USER=deploy`
+- `SERVER_SSH_KEY=PASTE_YOUR_PRIVATE_KEY_HERE`
+
+### 4) Prepare the VM repo and deploy script
+```bash
+mkdir -p ~/apps
+git clone https://github.com/mustafanetl/t-agent.git ~/apps/t-agent
+ln -s ~/apps/t-agent/server/deploy.sh ~/apps/t-agent/deploy.sh
+```
+
+### 5) Commit and push the workflow
+```bash
+git add .github/workflows/deploy.yml
+git commit -m "Add GitHub Actions deploy workflow"
+git push origin main
+```
+
+### 6) Trigger a test deploy
+Push any commit to `main`, then watch **GitHub Actions → Deploy**. The workflow will run:
+```bash
+bash ~/apps/t-agent/deploy.sh
+```
+
+### 7) Troubleshooting
+- **Permission denied (publickey):** confirm the public key is in `~/.ssh/authorized_keys` on the VM and the GitHub secret uses the matching private key.
+- **Host key verification failed:** SSH into the VM once from your laptop to accept the host key.
+- **Docker permission denied:** run `newgrp docker` or log out/in after `usermod -aG docker deploy`.
+
+---
+
 ## Useful commands
 
 ```bash
