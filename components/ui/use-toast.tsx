@@ -14,7 +14,7 @@ type ToastContextValue = {
 
 const ToastContext = React.createContext<ToastContextValue | undefined>(undefined);
 
-export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
+export const ToastProvider = ({ children }: { children: React.ReactNode }): React.ReactElement => {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
 
   const push = React.useCallback((toast: Omit<Toast, 'id'>) => {
