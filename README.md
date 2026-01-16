@@ -153,7 +153,10 @@ In GitHub → **Settings → Secrets and variables → Actions**, add:
 - `SERVER_SSH_KEY`
 
 ### 3) Workflow
-The workflow is in `.github/workflows/deploy.yml` and runs on every push to `main`.
+The workflow is in `.github/workflows/deploy.yml`, runs on every push to `main`, and executes:
+```
+bash ~/apps/t-agent/deploy.sh
+```
 
 ---
 
